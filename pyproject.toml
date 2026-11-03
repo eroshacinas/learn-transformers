@@ -7,7 +7,9 @@ authors = [
     { name = "Eros Hacinas", email = "eros_hacinas@dlsu.edu.ph" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "ipykernel>=7.4.0",
+]
 
 [project.scripts]
 learn-transformers = "learn_transformers:main"
