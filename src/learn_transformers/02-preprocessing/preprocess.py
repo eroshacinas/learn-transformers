@@ -57,3 +57,14 @@ print(tokenizer.decode(ids))
 # this will throw a KeyError 'Hello'
 text = "Hello, do you like tea?"
 print(tokenizer.encode(text))
+
+# %% extend vocab: include <|endoftext|> and <|unk|>
+all_tokens = sorted(list(set(preprocessed)))
+all_tokens.extend(["<|endoftext|>", "<|unk|>"])
+vocab = {token:integer for integer,token in enumerate(all_tokens)}
+print(len(vocab.items()))
+
+
+# %% test again
+for i, item in enumerate(list(vocab.items())[-5:]):
+    print(item)
