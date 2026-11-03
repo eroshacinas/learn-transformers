@@ -1,0 +1,17 @@
+[project]
+name = "learn-transformers"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Eros Hacinas", email = "eros_hacinas@dlsu.edu.ph" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+learn-transformers = "learn_transformers:main"
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"
