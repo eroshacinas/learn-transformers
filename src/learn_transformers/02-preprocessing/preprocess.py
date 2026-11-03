@@ -68,3 +68,41 @@ print(len(vocab.items()))
 # %% test again
 for i, item in enumerate(list(vocab.items())[-5:]):
     print(item)
+
+# %% simple tokenizer v2
+from tokenizer.SimpleTokenizerV2 import SimpleTokenizerV2
+
+text1 = "Hello, do you like tea?"
+text2 = "In the sunlit terraces of the palace."
+text = " <|endoftext|> ".join((text1, text2))
+print(text)
+
+# %%
+tokenizer = SimpleTokenizerV2(vocab)
+print(tokenizer.encode(text))
+
+# %%
+print(tokenizer.decode(tokenizer.encode(text)))
+"""
+- [BOS] (beginning of sequence)—This token marks the start of a text. It signifies to
+the LLM where a piece of content begins.
+
+- [EOS] (end of sequence)—This token is positioned at the end of a text and
+is especially useful when concatenating multiple unrelated texts, similar to
+<|endoftext|>. For instance, when combining two different Wikipedia arti-
+cles or books, the [EOS] token indicates where one ends and the next begins.
+
+- [PAD] (padding)—When training LLMs with batch sizes larger than one, the
+batch might contain texts of varying lengths. To ensure all texts have the same
+length, the shorter texts are extended or “padded” using the [PAD] token, up to
+the length of the longest text in the batch.
+
+The tokenizer used for GPT models does not need any of these tokens; it only uses an
+<|endoftext|> token for simplicity. <|endoftext|> is analogous to the [EOS] token.
+<|endoftext|> is also used for padding.
+
+However, as we’ll explore in subsequent
+chapters, when training on batched inputs, we typically use a mask, meaning we don’t
+attend to padded tokens. Thus, the specific token chosen for padding becomes incon-
+sequential
+"""
