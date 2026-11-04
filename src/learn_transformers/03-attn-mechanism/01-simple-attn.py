@@ -36,6 +36,7 @@ for i, x_i in enumerate(inputs):
     attn_scores_2[i] = torch.dot(x_i, query) # dot product
 
 print(attn_scores_2)
+
 # %% normalization
 """
 The main goal behind the normalization is to obtain attention
@@ -59,3 +60,25 @@ def softmax_naive(x):
 attn_weights_2_naive = softmax_naive(attn_scores_2)
 print("Attention weights:", attn_weights_2_naive)
 print("Sum:", attn_weights_2_naive.sum())
+# %% in practice, its better to use torch's softmax
+attn_weights_2 = torch.softmax(attn_scores_2, dim=0)
+print("Attention weights:", attn_weights_2)
+print("Sum:", attn_weights_2.sum())
+# %% calculate context vector
+"""
+calculating the context vector z(2) by multiplying the
+embedded input tokens, x(i), with the corresponding attention weights and then sum-
+ming the resulting vectors.
+
+Thus, context vector z(2) is the weighted sum of all input vec-
+tors, obtained by multiplying each input vector by its corresponding attention weight
+"""
+query = inputs[1] # second input token
+context_vec_2 = torch.zeros(query.shape)
+
+for i, x_i in enumerate(inputs):
+    context_vec_2 += attn_weights_2[i] * x_i # scale each embedding dim by attention score (refer to Fig. 3.10)
+
+print(context_vec_2) # weighted sum of all input vectors
+# %% generalized computation: computing attention weights for all input tokens
+attn_scores
