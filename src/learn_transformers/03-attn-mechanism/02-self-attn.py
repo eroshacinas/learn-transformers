@@ -58,3 +58,37 @@ values = inputs @ W_value
 # we see that we projected the six input tokens from a 3-d to 2-d embedding space
 print("keys.shape:", keys.shape)
 print("values.shape:", values.shape)
+
+# %% calculate attn score w_22
+"""
+The attention score computation is a dot-product computation similar to what we used in the
+simplified self-attention mechanism in section 3.3. The new aspect here is that we are not directly computing the
+dot-product between the input elements but using the query and key obtained by transforming the inputs via the
+respective weight matrices.
+"""
+keys_2 = keys[1]
+attn_score_22 = query_2.dot(keys_2)
+print(attn_score_22)
+attn_scores_2 = query_2 @ keys.T
+print(attn_scores_2)
+
+# %% normalize
+"""
+The reason for the normalization by the embedding dimension size is to improve the
+training performance by avoiding small gradients. For instance, when scaling up the
+embedding dimension, which is typically greater than 1,000 for GPT-like LLMs, large
+dot products can result in very small gradients during backpropagation due to the
+softmax function applied to them.
+
+As dot products increase, the softmax function
+behaves more like a step function, resulting in gradients nearing zero. These small
+gradients can drastically slow down learning or cause training to stagnate.
+
+The scaling by the square root of the embedding dimension is the reason why this
+self-attention mechanism is also called scaled-dot product attention
+"""
+d_k = keys.shape[-1]
+attn_weights_2 = torch.softmax(attn_scores_2 / d_k**0.5, dim=-1) # we also scale it by sqrt(d_out)
+print(attn_weights_2)
+# %%
+print(keys.shape[-1])
