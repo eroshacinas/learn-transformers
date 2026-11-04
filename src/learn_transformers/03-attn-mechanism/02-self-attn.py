@@ -28,6 +28,10 @@ involving the weight matrices Wk and Wv
 weight params vs attention weights
 weight parameters are the fundamental, learned coefficients that define
 the network’s connections, while attention weights are dynamic, context-specific values
+
+in other words, the K,Q,V weights are from linear layers (or linear equation) that
+gets adjusted during training. its respective
+projections (x@W_k, x@W_q, and x@W_v) are used to calculate attention
 """
 
 x_2 = inputs[1] # query
@@ -46,3 +50,11 @@ key_2 = x_2 @ W_key
 value_2 = x_2 @ W_value
 
 print(query_2)
+
+# %% keys and values
+keys = inputs @ W_key
+values = inputs @ W_value
+
+# we see that we projected the six input tokens from a 3-d to 2-d embedding space
+print("keys.shape:", keys.shape)
+print("values.shape:", values.shape)
