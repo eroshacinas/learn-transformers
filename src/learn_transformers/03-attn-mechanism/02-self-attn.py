@@ -110,3 +110,9 @@ from attention.SelfAttentionv1 import SelfAttentionv1
 torch.manual_seed(123)
 sa_v1 = SelfAttentionv1(d_in, d_out)
 print(sa_v1(inputs))
+
+# %% using SAv2
+from attention.SelfAttentionv2 import SelfAttentionv2
+torch.manual_seed(789)
+sa_v2 = SelfAttentionv2(d_in, d_out)
+print(sa_v2(inputs))
