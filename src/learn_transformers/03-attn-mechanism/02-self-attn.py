@@ -105,3 +105,8 @@ why query, key, value:
     borrowed from the domain of information retrieval and databases, where similar con-
     cepts are used to store, search, and retrieve information
 """
+
+from attention.SelfAttentionv1 import SelfAttentionv1
+torch.manual_seed(123)
+sa_v1 = SelfAttentionv1(d_in, d_out)
+print(sa_v1(inputs))
