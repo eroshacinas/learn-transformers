@@ -59,7 +59,7 @@ values = inputs @ W_value
 print("keys.shape:", keys.shape)
 print("values.shape:", values.shape)
 
-# %% calculate attn score w_22
+# %% step 1: calculate attn score w_22
 """
 The attention score computation is a dot-product computation similar to what we used in the
 simplified self-attention mechanism in section 3.3. The new aspect here is that we are not directly computing the
@@ -72,7 +72,7 @@ print(attn_score_22)
 attn_scores_2 = query_2 @ keys.T
 print(attn_scores_2)
 
-# %% normalize
+# %% step 2: attention weights; normalize
 """
 The reason for the normalization by the embedding dimension size is to improve the
 training performance by avoiding small gradients. For instance, when scaling up the
@@ -90,5 +90,18 @@ self-attention mechanism is also called scaled-dot product attention
 d_k = keys.shape[-1]
 attn_weights_2 = torch.softmax(attn_scores_2 / d_k**0.5, dim=-1) # we also scale it by sqrt(d_out)
 print(attn_weights_2)
+# %% step 3: compute context vector
+"""
+the attention weights serve as a weighting factor that
+weighs the respective importance of each value vector
+"""
+
+context_vec_2 = attn_weights_2 @ values
+print(context_vec_2)
 # %%
-print(keys.shape[-1])
+"""
+why query, key, value:
+    The terms “key,” “query,” and “value” in the context of attention mechanisms are
+    borrowed from the domain of information retrieval and databases, where similar con-
+    cepts are used to store, search, and retrieve information
+"""
