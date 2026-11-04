@@ -75,4 +75,57 @@ This ensures there’s no information leakage from future (or otherwise masked)
 tokens as we intended
 """
 
-# %%
+# %% improve mask
+
+"""
+The softmax function converts its inputs into a probability distribution. When nega-
+tive infinity values (-∞) are present in a row, the softmax function treats them as zero
+probability
+"""
+
+mask = torch.triu(torch.ones(context_length, context_length), diagonal=1)
+masked = attn_scores.masked_fill(mask.bool(), -torch.inf)
+print(masked)
+
+attn_weights = torch.softmax(masked / keys.shape[-1] ** 0.5, dim=1)
+print(attn_weights)
+
+# %% masking additional attention weights with dropout
+"""
+dropout in the atten-
+tion mechanism is typically applied at two specific times: after calculating the atten-
+tion weights or after applying the attention weights to the value vectors
+
+Here we will apply the dropout mask after computing the attention weights,
+"""
+
+torch.manual_seed(123)
+dropout = torch.nn.Dropout(0.5) # 50% dropout
+example = torch.ones(6,6)
+print(dropout(example))
+"""
+To compensate for the reduction in active elements,
+the values of the remaining elements in the matrix are scaled up by a
+factor of 1/0.5 = 2.
+
+This scaling is crucial to maintain the overall balance of the attention weights, ensuring that the average
+influence of the attention mechanism remains consistent during both training and inference.
+"""
+
+# %% applying dropout to attention weight
+torch.manual_seed(123)
+print(attn_weights)
+print(dropout(attn_weights))
+
+# %% simulate batched samples by duplicating inputs
+batch = torch.stack([inputs, inputs], dim=0)
+print(batch.shape)
+
+# %% using our causal attn
+from attention.CausalAttention import CausalAttention
+torch.manual_seed(123)
+
+context_length = batch.shape[1]
+ca = CausalAttention(d_in, d_out, context_length, 0.0)
+context_vecs = ca(batch)
+print("context_vecs.shape:", context_vecs.shape)
