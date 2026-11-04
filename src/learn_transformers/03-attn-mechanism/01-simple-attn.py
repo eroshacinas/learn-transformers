@@ -81,4 +81,28 @@ for i, x_i in enumerate(inputs):
 
 print(context_vec_2) # weighted sum of all input vectors
 # %% generalized computation: computing attention weights for all input tokens
-attn_scores
+"""
+1. compute attention scores - dot products between each input's embedding dim
+2. compute attention weights - normalized attention scores
+3. compute context vectors - weighted sum over the inputs
+"""
+
+attn_scores = torch.empty(6,6) # based on number of tokens x number of tokens
+
+for i, x_i in enumerate(inputs):
+    for j, x_j in enumerate(inputs):
+        attn_scores[i,j] = torch.dot(x_i, x_j)
+
+# each row in attn_scores represent the a token as query
+print(attn_scores)
+
+# %% IRL, we use matrix mult
+attn_scores = inputs @ inputs.T
+print(attn_scores)
+
+# %% normalize (again)
+attn_weights = torch.softmax(attn_scores, dim = 1)
+print(attn_weights)
+
+# verify all rows sum to 1
+print(f"sum of values along y-axis: {torch.sum(attn_weights, dim=1)}")
