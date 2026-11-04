@@ -15,8 +15,4 @@ class MultiheadAttentionWrapper(nn.Module):
 
 
     def forward(self, x):
-        return torch.cat([head(x) for head in self.heads], dim=1)
-
-
-    # def forward(self, x):
-    #     return torch.cat([head(x) for head in self.heads], dim=-1)
+        return torch.cat([head(x) for head in self.heads], dim=-1)
