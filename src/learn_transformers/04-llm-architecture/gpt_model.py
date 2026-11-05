@@ -131,3 +131,25 @@ class GELU(nn.Module):
         return 0.5 * x * (1 + torch.tanh(
             torch.sqrt(torch.tensor(2.0 / torch.pi)) * (x + 0.004715 * torch.pow(x,3))
         ))
+
+
+"""
+it internally expands the embedding dimension into a higher-
+dimensional space through the first linear layer
+
+This expansion is followed by a nonlinear GELU activation and then a contraction back to the orig-
+inal dimension with the second linear transformation. Such a design allows for the
+exploration of a richer representation space
+"""
+class FeedForward(nn.Module):
+    def __init__(self, cfg):
+        super().__init__()
+
+        self.layers = nn.Sequential(
+            nn.Linear(cfg["emb_dim"], 4 * cfg["emb_dim"]),
+            GELU(),
+            nn.Linear(4 * cfg["emb_dim"], cfg["emb_dim"])
+        )
+
+    def forward(self, x):
+        return self.layers(x)
