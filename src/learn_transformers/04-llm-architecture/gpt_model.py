@@ -100,6 +100,34 @@ Since layer normalization normal-
 izes each input independently of the batch size, it offers more flexibility and stability
 in these scenarios. This is particularly beneficial for distributed training or when
 deploying models in environments where resources are constrained.
+"""
 
 
 """
+Historically, the ReLU activation function has been commonly used in deep learning
+due to its simplicity and effectiveness across various neural network architectures.
+However, in LLMs, several other activation functions are employed beyond the tradi-
+tional ReLU. Two notable examples are GELU (Gaussian error linear unit) and SwiGLU
+(Swish-gated linear unit).
+
+GELU and SwiGLU are more complex and smooth activation functions incorpo-
+rating Gaussian and sigmoid-gated linear units, respectively. They offer improved per-
+formance for deep learning models, unlike the simpler ReLU.
+
+The GELU activation function can be implemented in several ways; the exact ver-
+sion is defined as GELU(x) = x⋅Φ(x), where Φ(x) is the cumulative distribution func-
+tion of the standard Gaussian distribution. In practice, however, it’s common to
+implement a computationally cheaper approximation (the original GPT-2 model was
+also trained with this approximation, which was found via curve fitting):
+
+
+"""
+class GELU(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+
+    def forward(self, x):
+        return 0.5 * x * (1 + torch.tanh(
+            torch.sqrt(torch.tensor(2.0 / torch.pi)) * (x + 0.004715 * torch.pow(x,3))
+        ))
