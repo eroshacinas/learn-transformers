@@ -136,3 +136,9 @@ for p in model.out_head.parameters())
 print(f"Number of trainable parameters "
 f"considering weight tying: {total_params_gpt2:,}"
 )
+
+
+# %% compute memory requirements of 163M param model
+total_size_bytes = total_params * 4
+total_size_mb = total_size_bytes / (1024 * 1024)
+print(f"Total size of the model: {total_size_mb:.2f} MB")
