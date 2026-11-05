@@ -84,3 +84,22 @@ class LayerNorm(nn.Module):
         norm_x = (x-mean) / torch.sqrt(var + self.eps)
 
         return self.scale * norm_x + self.shift
+
+
+"""
+LayerNorm vs BatchNorm
+
+If you are familiar with batch normalization, a common and traditional normalization
+method for neural networks, you may wonder how it compares to layer normalization.
+Unlike batch normalization, which normalizes across the batch dimension, layer nor-
+malization normalizes across the feature dimension. LLMs often require significant
+computational resources, and the available hardware or the specific use case can
+dictate the batch size during training or inference.
+
+Since layer normalization normal-
+izes each input independently of the batch size, it offers more flexibility and stability
+in these scenarios. This is particularly beneficial for distributed training or when
+deploying models in environments where resources are constrained.
+
+
+"""
