@@ -14,7 +14,7 @@ class DummyGPTModel(nn.Module):
         self.trf_blocks = nn.Sequential(*[DummyTransformerBlock(cfg)
             for _ in range(cfg["n_layers"])])
 
-        self.final_norm = DummyLayerNorm(cfg["emb_dim"])
+        self.final_norm = LayerNorm(cfg["emb_dim"])
         self.out_head = nn.Linear(cfg["emb_dim"], cfg["vocab_size"], bias=False)
 
     def forward(self, in_idx):
@@ -73,7 +73,13 @@ class LayerNorm(nn.Module):
 
     def forward(self, x):
         mean = x.mean(dim=-1, keepdim=True)
-        var = x.var(dim=-1, keepdim=True)
+        """
+        This approach does not apply Bessel’s correction, which typically uses n – 1 instead of n in the denomi-
+        nator to adjust for bias in sample variance estimation. This decision results in a so-
+        called biased estimate of the variance. For LLMs, where the embedding dimension n
+        is significantly large, the difference between using n and n – 1 is practically negligible
+        """
+        var = x.var(dim=-1, keepdim=True, unbiased=False)
 
         norm_x = (x-mean) / torch.sqrt(var + self.eps)
 
