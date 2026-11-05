@@ -142,3 +142,55 @@ f"considering weight tying: {total_params_gpt2:,}"
 total_size_bytes = total_params * 4
 total_size_mb = total_size_bytes / (1024 * 1024)
 print(f"Total size of the model: {total_size_mb:.2f} MB")
+
+# %% autoregressive nature
+"""
+refer to Figure 4.17 for full description:
+    1. encode text input into four token IDs
+    2. return matrix containing 4 (token IDs) x 50,257 (vocab size)
+    3. get last vector since we're interested in next token
+    4. convert logits into prob. distrib. using softmax
+    5. identify the largest value and get its token ID
+    6. decode token ID and append token to current input seuquence
+    7. rerun 1-6 until max length is achieved or END token is generated
+"""
+
+def generate_text_simple(model, idx, max_new_tokens, context_size):
+    """
+    greedy-style decoding.
+    idx is a (batch, n_tokens) array
+    """
+    for _ in range(max_new_tokens):
+        idx_cond = idx[:, -context_size:] # get last CONTEXT_SIZE tokens
+
+        with torch.no_grad():
+            logits = model(idx_cond)
+
+        logits = logits[:, -1, :] # get last vector of each sample
+        probas = torch.softmax(logits, dim=-1) # apply softmax col-wise
+        idx_next = torch.argmax(probas, dim=-1, keepdim=True) # get index of max score
+        idx = torch.cat((idx, idx_next), dim=1) # append predicted text
+
+
+    return idx
+
+# %% test greedy decode
+start_context = "Hello, I am"
+encoded = tokenizer.encode(start_context)
+print("encoded:", encoded)
+encoded_tensor = torch.tensor(encoded).unsqueeze(0)
+print("encoded_tensor.shape:", encoded_tensor.shape)
+
+model.eval()
+
+out = generate_text_simple(
+    model=model,
+    idx = encoded_tensor,
+    max_new_tokens=6,
+    context_size=GPT_CONFIG_124M["context_length"]
+)
+
+print("Output:", out)
+print("Output length:", len(out[0]))
+decoded_text = tokenizer.decode(out.squeeze(0).tolist())
+print(decoded_text)
