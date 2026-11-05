@@ -44,11 +44,37 @@ class DummyTransformerBlock(nn.Module):
         return x
 
 
+"""
+The main idea behind layer normalization is to adjust the activa-
+tions (outputs) of a neural network layer to have a mean of 0 and a variance of 1, also
+known as unit variance
 
-class DummyLayerNorm(nn.Module):
-    def __init__(self, normalized_shape, eps=1e-5):
+This adjustment speeds up the convergence to effective
+weights and ensures consistent, reliable training.
+
+In GPT-2 and modern transformer
+architectures, layer normalization is typically applied before and after the multi-head
+attention module.
+
+The scale and shift are two trainable parameters (of the
+same dimension as the input) that the LLM automatically adjusts during training if it
+is determined that doing so would improve the model’s performance on its training
+task. This allows the model to learn appropriate scaling and shifting that best suit the
+data it is processing
+"""
+
+class LayerNorm(nn.Module):
+    def __init__(self, emb_dim):
         super().__init__()
+        self.eps = 1e-5
+        self.scale = nn.Parameter(torch.ones(emb_dim))
+        self.shift = nn.Parameter(torch.zeros(emb_dim))
 
 
     def forward(self, x):
-        return x
+        mean = x.mean(dim=-1, keepdim=True)
+        var = x.var(dim=-1, keepdim=True)
+
+        norm_x = (x-mean) / torch.sqrt(var + self.eps)
+
+        return self.scale * norm_x + self.shift
