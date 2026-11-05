@@ -2,7 +2,7 @@
 import tiktoken
 import torch
 import torch.nn as nn
-from gpt_model import DummyGPTModel
+from gpt_model import DummyGPTModel, LayerNorm
 
 # refer to page 95 for what each variable means
 GPT_CONFIG_124M = {
@@ -51,5 +51,14 @@ out_norm = (out - mean) / torch.sqrt(var)
 mean = out_norm.mean(dim=-1, keepdim=True)
 var = out_norm.var(dim=-1, keepdim=True)
 print("Normalized layer outputs:\n", out_norm)
+print("Mean:\n", mean)
+print("Variance:\n", var)
+
+# %% actualy LayerNorm
+ln = LayerNorm(emb_dim=5)
+out_ln = ln(batch_example)
+
+mean = out_ln.mean(dim=-1, keepdim=True)
+var = out_ln.var(dim=-1, unbiased=False, keepdim=True)
 print("Mean:\n", mean)
 print("Variance:\n", var)
