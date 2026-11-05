@@ -1,6 +1,7 @@
 # %%
 import tiktoken
 import torch
+import torch.nn as nn
 from gpt_model import DummyGPTModel
 
 # refer to page 95 for what each variable means
@@ -32,3 +33,23 @@ print("Output shape:", logits.shape)
 
 # the output is 2 samples x 4 tokens x vocab size
 print(logits)
+
+# %% layer norm test
+torch.manual_seed(123)
+batch_example = torch.randn(2, 5)
+layer = nn.Sequential(nn.Linear(5, 6), nn.ReLU())
+out = layer(batch_example)
+print(out)
+
+mean = out.mean(dim=-1, keepdim=True)
+var = out.var(dim=-1, keepdim=True)
+print("Mean:\n", mean)
+print("Variance:\n", var)
+
+# %% apply layer norm to test sample
+out_norm = (out - mean) / torch.sqrt(var)
+mean = out_norm.mean(dim=-1, keepdim=True)
+var = out_norm.var(dim=-1, keepdim=True)
+print("Normalized layer outputs:\n", out_norm)
+print("Mean:\n", mean)
+print("Variance:\n", var)
